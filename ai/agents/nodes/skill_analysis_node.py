@@ -1,4 +1,4 @@
-from ..state.career_state import CareerState
+from state.career_state import CareerState
 
 async def skill_analysis_node(state: CareerState) -> CareerState:
     """Skill Analysis Node: Compares current candidate skills against target role benchmarks"""

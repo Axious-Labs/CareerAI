@@ -1,8 +1,7 @@
 from typing import Dict, Any, List
-from ..agents.career_agent import CareerAgent
-from ..agents.skill_gap_agent import SkillGapAgent
-from ..agents.learning_planner_agent import LearningPlannerAgent
-from ..state.career_state import CareerState
+from agents.career_agent import CareerAgent
+from agents.skill_gap_agent import SkillGapAgent
+from agents.learning_planner_agent import LearningPlannerAgent
 
 class AgentService:
     def __init__(self):

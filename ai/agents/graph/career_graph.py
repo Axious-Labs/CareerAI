@@ -1,8 +1,8 @@
 from typing import Callable, Dict, Any, List
-from ..state.career_state import CareerState
-from ..nodes.profile_node import profile_node
-from ..nodes.skill_analysis_node import skill_analysis_node
-from ..nodes.recommendation_node import recommendation_node
+from state.career_state import CareerState
+from nodes.profile_node import profile_node
+from nodes.skill_analysis_node import skill_analysis_node
+from nodes.recommendation_node import recommendation_node
 
 class CareerGraph:
     """

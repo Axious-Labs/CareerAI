@@ -1,4 +1,4 @@
-from ..state.career_state import CareerState
+from state.career_state import CareerState
 
 async def profile_node(state: CareerState) -> CareerState:
     """Profile Node: Validates user identity, target role, and normalizes candidate data"""

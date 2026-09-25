@@ -1,6 +1,6 @@
-from typing import Dict, Any, List
-from ..state.career_state import CareerState
-from ..graph.career_graph import career_graph_workflow
+from typing import List
+from state.career_state import CareerState
+from graph.career_graph import career_graph_workflow
 
 class CareerAgent:
     """Orchestrates comprehensive career planning workflows for students"""

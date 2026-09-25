@@ -13,5 +13,6 @@ void main() {
 
     // Verify CareerAI branding and initial elements exist
     expect(find.text('CareerAI'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
   });
 }

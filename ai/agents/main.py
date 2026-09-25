@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
-from .services.agent_service import agent_service
-from .mcp.mcp_adapter import mcp_adapter
+from typing import List, Optional
+from services.agent_service import agent_service
+from mcp.mcp_adapter import mcp_adapter
 
 app = FastAPI(
     title="CareerAI Agentic AI Service",

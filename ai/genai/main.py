@@ -1,18 +1,18 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .models.resume import ResumeAnalyzeRequest, ResumeAnalyzeResponse
-from .models.skills import (
+from models.resume import ResumeAnalyzeRequest, ResumeAnalyzeResponse
+from models.skills import (
     SkillExtractRequest,
     SkillExtractResponse,
     SkillGapRequest,
     SkillGapResponse,
 )
-from .models.rag import RAGQueryRequest, RAGQueryResponse
-from .models.job import JobMatchRequest, JobMatchResponse
-from .services.resume_parser import default_resume_parser
-from .services.skill_extraction import default_skill_extraction_service
-from .services.rag_service import default_rag_service
-from .services.job_matching import default_job_matching_service
+from models.rag import RAGQueryRequest, RAGQueryResponse
+from models.job import JobMatchRequest, JobMatchResponse
+from services.resume_parser import default_resume_parser
+from services.skill_extraction import default_skill_extraction_service
+from services.rag_service import default_rag_service
+from services.job_matching import default_job_matching_service
 
 app = FastAPI(
     title="CareerAI GenAI Service",

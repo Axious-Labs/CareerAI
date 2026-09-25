@@ -26,17 +26,17 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd careerai/mobile
+          cd mobile
           flutter pub get
 
       - name: Analyze Code
         run: |
-          cd careerai/mobile
+          cd mobile
           flutter analyze
 
       - name: Run Widget & Unit Tests
         run: |
-          cd careerai/mobile
+          cd mobile
           flutter test
 
   # ---------------------------------------------------------------------------
@@ -68,22 +68,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: careerai/backend/package-lock.json
 
       - name: Install Dependencies
         run: |
-          cd careerai/backend
-          npm ci
+          cd backend
+          npm install
 
       - name: Generate Prisma Client
         run: |
-          cd careerai/backend
+          cd backend
           npx prisma generate
 
       - name: Run Linter
         run: |
-          cd careerai/backend
+          cd backend
           npm run lint
 
       - name: Run Tests
@@ -91,7 +89,7 @@ jobs:
           DATABASE_URL: postgresql://careerai:careerai_secret@localhost:5432/careerai_test_db?schema=public
           JWT_SECRET: test_jwt_secret_key_minimum_32_characters_long
         run: |
-          cd careerai/backend
+          cd backend
           npm test
 
   # ---------------------------------------------------------------------------
@@ -101,6 +99,7 @@ jobs:
     name: AI Services CI (Python)
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         service: [ 'genai', 'agents' ]
     steps:
@@ -112,21 +111,21 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: careerai/ai/${{ matrix.service }}/requirements.txt
+          cache-dependency-path: ai/${{ matrix.service }}/requirements.txt
 
       - name: Install Dependencies
         run: |
-          cd careerai/ai/${{ matrix.service }}
+          cd ai/${{ matrix.service }}
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install ruff pytest httpx
+          pip install ruff pytest pytest-asyncio httpx
 
       - name: Run Linter (Ruff)
         run: |
-          cd careerai/ai/${{ matrix.service }}
+          cd ai/${{ matrix.service }}
           ruff check .
 
       - name: Run Pytest Suite
         run: |
-          cd careerai/ai/${{ matrix.service }}
+          cd ai/${{ matrix.service }}
           pytest

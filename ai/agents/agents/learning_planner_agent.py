@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 class LearningPlannerAgent:
     """Agent responsible for crafting personalized, week-by-week learning roadmaps"""

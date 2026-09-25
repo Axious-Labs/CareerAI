@@ -1,4 +1,4 @@
-from ..state.career_state import CareerState
+from state.career_state import CareerState
 
 async def recommendation_node(state: CareerState) -> CareerState:
     """Recommendation Node: Generates prioritized action items and career roadmaps based on gaps"""

@@ -1,10 +1,10 @@
 import pytest
-from ..state.career_state import CareerState
-from ..graph.career_graph import career_graph_workflow
-from ..agents.career_agent import CareerAgent
-from ..agents.skill_gap_agent import SkillGapAgent
-from ..agents.learning_planner_agent import LearningPlannerAgent
-from ..mcp.mcp_adapter import mcp_adapter
+from state.career_state import CareerState
+from graph.career_graph import career_graph_workflow
+from agents.career_agent import CareerAgent
+from agents.skill_gap_agent import SkillGapAgent
+from agents.learning_planner_agent import LearningPlannerAgent
+from mcp.mcp_adapter import mcp_adapter
 
 @pytest.mark.asyncio
 async def test_career_graph_workflow():

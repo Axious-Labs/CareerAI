@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Dict, Any
+from typing import TypedDict
 
 class CareerState(TypedDict):
     user_id: str

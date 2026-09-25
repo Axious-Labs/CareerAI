@@ -1,5 +1,5 @@
-from typing import List, Dict, Any
-from ..services.interfaces import VectorStore, LLMService
+from typing import Dict, Any
+from services.interfaces import VectorStore, LLMService
 
 class RAGPipeline:
     def __init__(self, vector_store: VectorStore, llm_service: LLMService):

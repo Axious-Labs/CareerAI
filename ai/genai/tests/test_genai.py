@@ -1,5 +1,5 @@
 import pytest
-from ..services.mock_services import (
+from services.mock_services import (
     MockResumeParser,
     MockSkillExtractionService,
     MockJobMatchingService,
@@ -7,7 +7,7 @@ from ..services.mock_services import (
     MockVectorStore,
     MockLLMService,
 )
-from ..evaluation.evaluator import AIResponseEvaluator
+from evaluation.evaluator import AIResponseEvaluator
 
 @pytest.mark.asyncio
 async def test_resume_parser():
