@@ -21,18 +21,8 @@ class CareerAIApp extends StatelessWidget {
       title: 'CareerAI by Axious Labs',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
+      // router config
       routerConfig: AppRouter.router,
-      routeInformationParser: AppRouter.routeInformationParser,
-      routeInformationProvider: AppRouter.routeInformationProvider,
-      routerDelegate: AppRouter.routerDelegate,
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {
-          PointerDeviceKind.mouse,
-          PointerDeviceKind.touch,
-          PointerDeviceKind.stylus,
-          PointerDeviceKind.unknown,
-        },
-      ),
     );
   }
 }
