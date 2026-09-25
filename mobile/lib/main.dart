@@ -22,6 +22,17 @@ class CareerAIApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       routerConfig: AppRouter.router,
+      routeInformationParser: AppRouter.routeInformationParser,
+      routeInformationProvider: AppRouter.routeInformationProvider,
+      routerDelegate: AppRouter.routerDelegate,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown,
+        },
+      ),
     );
   }
 }
