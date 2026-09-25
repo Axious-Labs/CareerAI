@@ -11,7 +11,10 @@ void main() {
       ),
     );
 
-    // Verify CareerAI branding and initial elements exist
+    // Verify that the CareerAI text is displayed.
     expect(find.text('CareerAI'), findsOneWidget);
   });
+  testWidgets('CareerAI initial smoke test', (WidgetTester tester) async {
+
+  }
 }
