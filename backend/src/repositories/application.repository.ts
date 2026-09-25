@@ -17,7 +17,7 @@ export class ApplicationRepository {
     });
   }
 
-  async create(data: Prisma.ApplicationCreateInput): Promise<Application> {
+  async create(data: Prisma.ApplicationUncheckedCreateInput): Promise<Application> {
     return prisma.application.create({
       data,
     });

@@ -13,11 +13,21 @@ async def skill_analysis_node(state: CareerState) -> CareerState:
 
     benchmark = role_benchmarks.get(target_role.lower(), ["python", "docker", "langgraph"])
 
+    skill_display_names = {
+        "langgraph": "LangGraph",
+        "fastapi": "FastAPI",
+        "pytorch": "PyTorch",
+        "rag": "RAG",
+        "node.js": "Node.js",
+        "postgresql": "PostgreSQL",
+        "vector databases": "Vector Databases",
+    }
+
     gaps = []
     for req in benchmark:
         if not any(req in s for s in skills):
             gaps.append({
-                "skill": req.title(),
+                "skill": skill_display_names.get(req.lower(), req.title()),
                 "priority": "HIGH" if req in ["langgraph", "vector databases"] else "MEDIUM",
                 "estimatedWeeks": 2 if req == "langgraph" else 1,
             })
