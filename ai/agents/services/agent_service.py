@@ -20,7 +20,7 @@ class AgentService:
             "recommendations": state["recommendations"],
             "today_plan": [
                 {"id": "p1", "title": "Complete Transformers lesson", "completed": True},
-                {"id": "p2", "title": "Solve 2 DSA problems", "completed": True},
+                {"id": "p2", "title": "Solve 3 DSA problems", "completed": True},
                 {"id": "p3", "title": "Apply to 3 relevant jobs", "completed": False},
             ],
         }
