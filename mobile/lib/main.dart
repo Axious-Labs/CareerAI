@@ -21,7 +21,6 @@ class CareerAIApp extends StatelessWidget {
       title: 'CareerAI by Axious Labs',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      // router config
       routerConfig: AppRouter.router,
     );
   }
