@@ -27,7 +27,7 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   CircleAvatar(
                     radius: 45,
-                    backgroundColor: AppColors.accent.withOpacity(0.2),
+                    backgroundColor: AppColors.accent.withValues(alpha: 0.2),
                     child: Text(
                       user?.name.isNotEmpty == true ? user!.name[0] : 'U',
                       style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: AppColors.accent),

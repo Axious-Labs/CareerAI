@@ -9,6 +9,7 @@ import '../../features/skills/presentation/skills_screen.dart';
 import '../../features/jobs/presentation/jobs_screen.dart';
 import '../../features/applications/presentation/applications_screen.dart';
 import '../../features/ai_chat/presentation/ai_chat_screen.dart';
+import '../../features/interview/presentation/interview_prep_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -53,6 +54,10 @@ class AppRouter {
       GoRoute(
         path: '/ai-chat',
         builder: (context, state) => const AiChatScreen(),
+      ),
+      GoRoute(
+        path: '/interview-prep',
+        builder: (context, state) => const InterviewPrepScreen(),
       ),
     ],
   );

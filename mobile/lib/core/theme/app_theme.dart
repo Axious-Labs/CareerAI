@@ -11,10 +11,9 @@ class AppTheme {
         primary: AppColors.accent,
         secondary: AppColors.indigo,
         surface: AppColors.surface,
-        background: AppColors.background,
         error: AppColors.error,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(

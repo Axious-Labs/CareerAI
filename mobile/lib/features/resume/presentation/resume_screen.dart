@@ -64,7 +64,7 @@ class _ResumeScreenState extends State<ResumeScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.accent.withOpacity(0.5), style: BorderStyle.solid, width: 1.5),
+                  border: Border.all(color: AppColors.accent.withValues(alpha: 0.5), style: BorderStyle.solid, width: 1.5),
                 ),
                 child: Column(
                   children: [
@@ -113,7 +113,7 @@ class _ResumeScreenState extends State<ResumeScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: AppColors.success.withOpacity(0.15),
+                          color: AppColors.success.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(

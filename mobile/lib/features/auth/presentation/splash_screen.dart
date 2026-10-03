@@ -41,9 +41,9 @@ class _SplashScreenState extends State<SplashScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.1),
+                color: AppColors.accent.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.accent.withOpacity(0.3), width: 2),
+                border: Border.all(color: AppColors.accent.withValues(alpha: 0.3), width: 2),
               ),
               child: const Icon(
                 Icons.auto_awesome,
