@@ -26,4 +26,9 @@ class ApiEndpoints {
   static const String careerAnalyze = '/career/analyze';
   static const String skillGap = '/career/skill-gap';
   static const String roadmap = '/career/roadmap';
+
+  // Mock Technical Interviews
+  static const String startInterview = '/interviews/start';
+  static const String evaluateAnswer = '/interviews/evaluate';
+  static const String interviewHistory = '/interviews/history';
 }

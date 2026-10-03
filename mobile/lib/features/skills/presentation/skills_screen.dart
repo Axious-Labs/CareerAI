@@ -98,8 +98,8 @@ class _SkillsScreenState extends State<SkillsScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: gap['importance'] == 'HIGH'
-                                ? AppColors.error.withOpacity(0.2)
-                                : AppColors.warning.withOpacity(0.2),
+                                ? AppColors.error.withValues(alpha: 0.2)
+                                : AppColors.warning.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(

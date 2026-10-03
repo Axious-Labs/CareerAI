@@ -28,7 +28,7 @@ class DashboardScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.15),
+                color: AppColors.accent.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Text(
@@ -59,7 +59,7 @@ class DashboardScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.surface, AppColors.surfaceLight.withOpacity(0.5)],
+                  colors: [AppColors.surface, AppColors.surfaceLight.withValues(alpha: 0.5)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -90,7 +90,7 @@ class DashboardScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppColors.accent.withOpacity(0.2),
+                          color: AppColors.accent.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: AppColors.accent),
                         ),
@@ -187,6 +187,18 @@ class DashboardScreen extends ConsumerWidget {
                   title: 'AI Career Assistant',
                   icon: Icons.chat_bubble_outline,
                   route: '/ai-chat',
+                ),
+                _buildActionButton(
+                  context,
+                  title: 'Mock Interview',
+                  icon: Icons.psychology,
+                  route: '/interview-prep',
+                ),
+                _buildActionButton(
+                  context,
+                  title: 'Applications',
+                  icon: Icons.assignment_outlined,
+                  route: '/applications',
                 ),
               ],
             ),
@@ -304,7 +316,7 @@ class DashboardScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.1),
+                color: AppColors.accent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: AppColors.accent, size: 20),

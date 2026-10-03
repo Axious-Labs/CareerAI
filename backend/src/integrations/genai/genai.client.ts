@@ -23,6 +23,22 @@ export interface JobMatchResult {
   recommendation: string;
 }
 
+export interface GeneratedInterviewQuestion {
+  id: string;
+  question: string;
+  category: string;
+  expectedKeyPoints: string[];
+  sampleAnswerGuide: string;
+}
+
+export interface AnswerEvaluation {
+  score: number; // 0 - 100
+  feedback: string;
+  strengths: string[];
+  areasForImprovement: string[];
+  modelAnswerTip: string;
+}
+
 export class GenAIClient {
   private baseUrl: string;
 
@@ -116,6 +132,129 @@ export class GenAIClient {
     } catch (error) {
       logger.warn('GenAI Service RAG query fallback.');
       return `Based on your target role (${userContext?.targetRole || 'AI/ML Engineer'}) and current progress, focus on completing real-world projects that demonstrate LangGraph multi-agent workflows and vector retrieval pipelines.`;
+    }
+  }
+
+  async generateInterviewQuestions(
+    targetRole: string,
+    difficulty: string,
+    skillFocus?: string,
+    count = 5
+  ): Promise<GeneratedInterviewQuestion[]> {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/ai/interviews/generate`,
+        { targetRole, difficulty, skillFocus, count },
+        { timeout: 6000 }
+      );
+      return response.data.questions;
+    } catch (error) {
+      logger.warn('GenAI Service interview questions generation fallback.');
+      const pool: GeneratedInterviewQuestion[] = [
+        {
+          id: 'q_1',
+          category: 'System Architecture & LLMs',
+          question: `In designing a production RAG application for ${targetRole}, how do you mitigate hallucination and handle chunking strategies for diverse document formats?`,
+          expectedKeyPoints: [
+            'Context-aware semantic chunking with overlap',
+            'Embedding similarity thresholding & reranking',
+            'Chain-of-thought grounding with citation validation',
+          ],
+          sampleAnswerGuide:
+            'Discuss semantic chunking, embedding model tradeoffs (e.g. text-embedding-3-small vs large), cross-encoder re-ranking, and prompt constraints with strict guardrails.',
+        },
+        {
+          id: 'q_2',
+          category: 'Frameworks & State Management',
+          question: `How does state synchronization differ when implementing agentic cyclical graphs (e.g., LangGraph) versus linear chain workflows (e.g., standard LangChain)?`,
+          expectedKeyPoints: [
+            'StateGraph checkpointing and time-travel debugging',
+            'Reducer functions for accumulated state updates',
+            'Conditional edge routing based on tool calling output',
+          ],
+          sampleAnswerGuide:
+            'Highlight that cyclical graphs maintain persistence channels and allow iterative refinement loops, whereas linear DAGs fail when backtracking or dynamic tool loops are required.',
+        },
+        {
+          id: 'q_3',
+          category: 'Database & Vector Search',
+          question: `What are the latency and indexing tradeoffs between HNSW (Hierarchical Navigable Small World) and IVF-Flat indexing in vector databases like pgvector/Pinecone?`,
+          expectedKeyPoints: [
+            'HNSW graph traversal gives sub-linear query time with higher memory overhead',
+            'IVF clusters vectors into Voronoi cells, reducing memory at the cost of recall accuracy',
+            'Hybrid search combining dense vectors and sparse BM25 keyword matching',
+          ],
+          sampleAnswerGuide:
+            'Compare query latency, memory consumption, build time, and hybrid search ergonomics for large-scale enterprise retrieval.',
+        },
+        {
+          id: 'q_4',
+          category: 'Concurrency & Scalability',
+          question: `How do you handle rate limits, asynchronous job queues, and SSE (Server-Sent Events) streaming for real-time generative responses in Node.js/FastAPI?`,
+          expectedKeyPoints: [
+            'Token bucket algorithm / Redis distributed rate limiting',
+            'Streaming chunk response buffers using HTTP chunked transfer',
+            'Background worker queues (BullMQ/Celery) for heavy embedding generation',
+          ],
+          sampleAnswerGuide:
+            'Describe how streaming tokens prevents client timeout, and explain worker segregation for asynchronous long-running AI tasks.',
+        },
+        {
+          id: 'q_5',
+          category: 'Clean Code & Testing',
+          question: `What strategies and evaluation metrics (e.g., RAGAS, BLEU, ROUGE, LLM-as-a-Judge) do you use to test non-deterministic AI outputs in CI/CD pipelines?`,
+          expectedKeyPoints: [
+            'Context precision, recall, and faithfulness metrics in RAGAS',
+            'Deterministic mock fixtures for tool calls',
+            'Automated synthetic test generation and regression benchmarking',
+          ],
+          sampleAnswerGuide:
+            'Focus on automated CI test suites comparing ground truth QA datasets and running LLM judge evaluations with confidence scores.',
+        },
+      ];
+      return pool.slice(0, count);
+    }
+  }
+
+  async evaluateInterviewAnswer(
+    question: string,
+    candidateAnswer: string,
+    targetRole: string
+  ): Promise<AnswerEvaluation> {
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/ai/interviews/evaluate`,
+        { question, candidateAnswer, targetRole },
+        { timeout: 6000 }
+      );
+      return response.data;
+    } catch (error) {
+      logger.warn('GenAI Service interview answer evaluation fallback.');
+      const length = candidateAnswer.trim().length;
+      const hasKeywords = /chunk|vector|rag|state|async|cache|test|metric|latency|token/i.test(candidateAnswer);
+
+      let score = 70;
+      if (length > 120 && hasKeywords) score = 92;
+      else if (length > 60 || hasKeywords) score = 84;
+      else if (length < 30) score = 55;
+
+      return {
+        score,
+        feedback:
+          score >= 80
+            ? 'Excellent answer! You demonstrated solid architectural understanding, clear terminology, and practical technical depth.'
+            : 'Good foundational answer, but can be improved with more concrete architectural trade-offs, specific tools, and real-world metrics.',
+        strengths: [
+          'Clear technical communication and structured response',
+          'Identified relevant domain concepts and challenges',
+        ],
+        areasForImprovement: [
+          'Quantify system latency, throughput, and error boundaries',
+          'Mention specific production monitoring & observability tools',
+        ],
+        modelAnswerTip:
+          'Structure your response using the STAR or Problem-Tradeoff-Solution framework. Always mention resilience, edge cases, and testing strategy.',
+      };
     }
   }
 }

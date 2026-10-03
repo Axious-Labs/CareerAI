@@ -94,7 +94,7 @@ class _JobsScreenState extends State<JobsScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.accent.withOpacity(0.15),
+                        color: AppColors.accent.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: AppColors.accent),
                       ),

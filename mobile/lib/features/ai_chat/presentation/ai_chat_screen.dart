@@ -159,7 +159,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                           child: Text(
                             msg.timestamp,
                             style: TextStyle(
-                              color: msg.isUser ? AppColors.primary.withOpacity(0.6) : AppColors.textMuted,
+                              color: msg.isUser ? AppColors.primary.withValues(alpha: 0.6) : AppColors.textMuted,
                               fontSize: 10,
                             ),
                           ),
