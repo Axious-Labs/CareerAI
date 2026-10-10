@@ -7,7 +7,7 @@
 
 ## 🚀 Overview
 
-**CareerAI** is an intelligent career acceleration platform designed specifically for students and early-career developers. Developed by **Axious Labs**, CareerAI bridges the gap between academic preparation and industry demands through real-time resume intelligence, dynamic skill-gap analysis, personalized learning roadmaps, and autonomous career planning agents.
+**CareerAI** is an intelligent career acceleration platform designed specifically for students and sdhflsdeer developers. Developed by **Axious Labs**, CareerAI bridges the gap between academic preparation acgfdfhnd industry demands through real-time resume intelligence, dynamic skill-gap analysis, personalized learning roadmaps, and autonomous career planning agents.
 
 ### Core Workflow
 
