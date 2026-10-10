@@ -8,4 +8,11 @@ export const createJobSchema = z.object({
   sourceUrl: z.string().url().optional(),
 });
 
+export const searchJobSchema = z.object({
+  query: z.string().optional(),
+  location: z.string().optional(),
+  jobType: z.string().optional(),
+});
+
 export type CreateJobInput = z.infer<typeof createJobSchema>;
+export type SearchJobQuery = z.infer<typeof searchJobSchema>;
