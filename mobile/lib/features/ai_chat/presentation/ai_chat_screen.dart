@@ -1,137 +1,141 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_text_styles.dart';
+import '../services/ai_chat_service.dart';
 
-class ChatMessage {
-  final String text;
-  final bool isUser;
-  final String timestamp;
-
-  ChatMessage({
-    required this.text,
-    required this.isUser,
-    required this.timestamp,
-  });
-}
-
-class AiChatScreen extends StatefulWidget {
+class AiChatScreen extends ConsumerStatefulWidget {
   const AiChatScreen({super.key});
 
   @override
-  State<AiChatScreen> createState() => _AiChatScreenState();
+  ConsumerState<AiChatScreen> createState() => _AiChatScreenState();
 }
 
-class _AiChatScreenState extends State<AiChatScreen> {
+class _AiChatScreenState extends ConsumerState<AiChatScreen> {
   final _messageController = TextEditingController();
-  final List<ChatMessage> _messages = [
-    ChatMessage(
-      text: "Hello Alex! I am your CareerAI Assistant by Axious Labs. How can I help you accelerate your journey toward becoming an AI/ML Engineer today?",
-      isUser: false,
-      timestamp: "10:00 AM",
-    ),
-  ];
-
-  final List<String> _suggestedPrompts = [
-    "What should I learn to become an AI Engineer?",
-    "How can I bridge my LangGraph skill gap?",
-    "Review my resume for early-career AI roles",
-  ];
-
-  bool _isTyping = false;
-
-  void _sendMessage(String text) {
-    if (text.trim().isEmpty) return;
-
-    setState(() {
-      _messages.add(ChatMessage(
-        text: text,
-        isUser: true,
-        timestamp: "Now",
-      ));
-      _isTyping = true;
-    });
-
-    _messageController.clear();
-
-    // Simulate response from Node.js backend / GenAI service
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        setState(() {
-          _isTyping = false;
-          _messages.add(ChatMessage(
-            text: "Based on your current profile (strong Python at 80% and Flutter at 70%), prioritize mastering LLM architectures, fine-tuning with LoRA, and agentic workflows using LangGraph.",
-            isUser: false,
-            timestamp: "Now",
-          ));
-        });
-      }
-    });
-  }
+  final _scrollController = ScrollController();
+  bool _isSending = false;
 
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  Future<void> _handleSend([String? presetText]) async {
+    final text = (presetText ?? _messageController.text).trim();
+    if (text.isEmpty || _isSending) return;
+
+    _messageController.clear();
+    setState(() => _isSending = true);
+    _scrollToBottom();
+
+    await ref.read(chatStateProvider.notifier).sendUserMessage(text);
+
+    if (mounted) {
+      setState(() => _isSending = false);
+      _scrollToBottom();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final messages = ref.watch(chatStateProvider);
+    final lastAiMessage = messages.lastWhere(
+      (m) => !m.isUser,
+      orElse: () => messages.first,
+    );
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Row(
           children: [
-            const CircleAvatar(
-              radius: 16,
-              backgroundColor: AppColors.accent,
-              child: Icon(Icons.smart_toy, color: AppColors.primary, size: 18),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: AppColors.accent.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.auto_awesome, color: AppColors.accent, size: 18),
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text('CareerAI Assistant', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('Powered by Axious Labs GenAI', style: TextStyle(fontSize: 11, color: AppColors.accentLight)),
+                Text('Powered by Axious Labs LLM', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
               ],
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Clear Chat',
+            onPressed: () {
+              ref.read(chatStateProvider.notifier).clearConversation();
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
-          // Suggested prompt pills
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: _suggestedPrompts.map((prompt) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ActionChip(
-                    label: Text(prompt, style: const TextStyle(fontSize: 12, color: AppColors.textPrimary)),
-                    backgroundColor: AppColors.surface,
-                    side: const BorderSide(color: AppColors.border),
-                    onPressed: () => _sendMessage(prompt),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-          const Divider(color: AppColors.border, height: 1),
-
-          // Message history
+          // Messages list
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
+              itemCount: messages.length + (_isSending ? 1 : 0),
               itemBuilder: (context, index) {
-                final msg = _messages[index];
+                if (index == messages.length && _isSending) {
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent),
+                          ),
+                          SizedBox(width: 10),
+                          Text('CareerAI is thinking...', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                final msg = messages[index];
                 return Align(
                   alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.8,
+                    ),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: msg.isUser ? AppColors.accent : AppColors.surface,
                       borderRadius: BorderRadius.only(
@@ -151,6 +155,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                             color: msg.isUser ? AppColors.primary : AppColors.textPrimary,
                             fontSize: 14,
                             height: 1.4,
+                            fontWeight: msg.isUser ? FontWeight.w500 : FontWeight.normal,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -159,8 +164,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                           child: Text(
                             msg.timestamp,
                             style: TextStyle(
-                              color: msg.isUser ? AppColors.primary.withValues(alpha: 0.6) : AppColors.textMuted,
                               fontSize: 10,
+                              color: msg.isUser
+                                  ? AppColors.primary.withValues(alpha: 0.6)
+                                  : AppColors.textMuted,
                             ),
                           ),
                         ),
@@ -172,23 +179,34 @@ class _AiChatScreenState extends State<AiChatScreen> {
             ),
           ),
 
-          if (_isTyping)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-              child: Row(
-                children: const [
-                  SizedBox(
-                    height: 14,
-                    width: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent),
-                  ),
-                  SizedBox(width: 8),
-                  Text('CareerAI Assistant is thinking...', style: AppTextStyles.bodySmall),
-                ],
+          // Quick Replies
+          if (lastAiMessage.quickReplies.isNotEmpty && !_isSending)
+            Container(
+              height: 42,
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: lastAiMessage.quickReplies.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, idx) {
+                  final reply = lastAiMessage.quickReplies[idx];
+                  return ActionChip(
+                    label: Text(reply),
+                    backgroundColor: AppColors.surface,
+                    side: const BorderSide(color: AppColors.border),
+                    labelStyle: const TextStyle(
+                      color: AppColors.accentLight,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    onPressed: () => _handleSend(reply),
+                  );
+                },
               ),
             ),
 
-          // Input field
+          // Message Input Field
           Container(
             padding: const EdgeInsets.all(12),
             decoration: const BoxDecoration(
@@ -201,20 +219,26 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   Expanded(
                     child: TextField(
                       controller: _messageController,
-                      style: const TextStyle(color: AppColors.textPrimary),
-                      decoration: const InputDecoration(
-                        hintText: 'Ask career advice, skill gap, or interview prep...',
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                      style: const TextStyle(color: Colors.white),
+                      textInputAction: TextInputAction.send,
+                      onSubmitted: (_) => _handleSend(),
+                      decoration: InputDecoration(
+                        hintText: 'Ask CareerAI anything...',
+                        hintStyle: const TextStyle(color: AppColors.textMuted),
+                        filled: true,
+                        fillColor: AppColors.background,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
-                      onSubmitted: _sendMessage,
                     ),
                   ),
+                  const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.send, color: AppColors.accent),
-                    onPressed: () => _sendMessage(_messageController.text),
+                    icon: const Icon(Icons.send_rounded, color: AppColors.accent),
+                    onPressed: _isSending ? null : () => _handleSend(),
                   ),
                 ],
               ),

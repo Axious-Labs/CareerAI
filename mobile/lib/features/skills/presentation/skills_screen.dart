@@ -1,44 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../models/skill_model.dart';
+import '../services/skills_service.dart';
+import 'widgets/roadmap_timeline_widget.dart';
 
-class SkillsScreen extends StatefulWidget {
+class SkillsScreen extends ConsumerStatefulWidget {
   const SkillsScreen({super.key});
 
   @override
-  State<SkillsScreen> createState() => _SkillsScreenState();
+  ConsumerState<SkillsScreen> createState() => _SkillsScreenState();
 }
 
-class _SkillsScreenState extends State<SkillsScreen> {
+class _SkillsScreenState extends ConsumerState<SkillsScreen> {
   bool _showGapAnalysis = false;
-
-  final List<Map<String, dynamic>> _skills = [
-    {'name': 'Python', 'category': 'Programming Languages', 'proficiency': 'Advanced', 'level': 0.85},
-    {'name': 'Flutter & Dart', 'category': 'Mobile Development', 'proficiency': 'Intermediate', 'level': 0.70},
-    {'name': 'TypeScript', 'category': 'Programming Languages', 'proficiency': 'Intermediate', 'level': 0.65},
-    {'name': 'FastAPI & Node.js', 'category': 'Backend Development', 'proficiency': 'Intermediate', 'level': 0.65},
-    {'name': 'Generative AI & LLMs', 'category': 'Artificial Intelligence', 'proficiency': 'Intermediate', 'level': 0.60},
-    {'name': 'Machine Learning', 'category': 'Machine Learning', 'proficiency': 'Beginner', 'level': 0.40},
-    {'name': 'Docker', 'category': 'DevOps & Cloud', 'proficiency': 'Intermediate', 'level': 0.60},
-  ];
-
-  final List<Map<String, String>> _gaps = [
-    {'skill': 'LangGraph', 'importance': 'HIGH', 'time': '2 weeks', 'desc': 'Essential for agentic workflow orchestration'},
-    {'skill': 'Vector Databases (FAISS/pgvector)', 'importance': 'HIGH', 'time': '1 week', 'desc': 'Critical for semantic RAG search'},
-    {'skill': 'Kubernetes & MLOps', 'importance': 'MEDIUM', 'time': '3 weeks', 'desc': 'Deploying models at scale'},
-  ];
+  List<SkillItem> _skills = SkillsService.defaultUserSkills;
+  List<SkillGapItem> _gaps = SkillsService.defaultGaps;
 
   @override
   Widget build(BuildContext context) {
+    final milestones = ref.watch(roadmapProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Skills & Competencies')),
+      appBar: AppBar(
+        title: const Text('Skills & Competencies'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.tune),
+            tooltip: 'Toggle View',
+            onPressed: () {
+              setState(() => _showGapAnalysis = !_showGapAnalysis);
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Skill Gap Analysis Banner Button
+            // Target Role Banner
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -57,82 +60,130 @@ class _SkillsScreenState extends State<SkillsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Text('Target Role: AI/ML Engineer', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                        SizedBox(height: 2),
-                        Text('Benchmark against industry standards', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        Text('Target Role: AI/ML Engineer',
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                        SizedBox(height: 4),
+                        Text(
+                          'Readiness: 68% • 3 High-Impact Skill Gaps Identified',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
                       ],
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() => _showGapAnalysis = !_showGapAnalysis);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    ),
-                    child: Text(_showGapAnalysis ? 'Hide Gaps' : 'Analyze'),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
-            // Gap Analysis Results (if toggled)
-            if (_showGapAnalysis) ...[
-              const Text('Identified Skill Gaps', style: AppTextStyles.h2),
+            // Tab Selector
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: !_showGapAnalysis ? AppColors.accent : AppColors.surface,
+                      foregroundColor: !_showGapAnalysis ? AppColors.primary : AppColors.textSecondary,
+                    ),
+                    onPressed: () => setState(() => _showGapAnalysis = false),
+                    child: const Text('My Skills', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _showGapAnalysis ? AppColors.accent : AppColors.surface,
+                      foregroundColor: _showGapAnalysis ? AppColors.primary : AppColors.textSecondary,
+                    ),
+                    onPressed: () => setState(() => _showGapAnalysis = true),
+                    child: const Text('Skill Gap Analysis', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            if (!_showGapAnalysis) ...[
+              // Skills List
+              const Text('Assessed Competencies', style: AppTextStyles.h2),
               const SizedBox(height: 12),
-              ..._gaps.map((gap) => Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(14),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _skills.length,
+                itemBuilder: (context, index) {
+                  final skill = _skills[index];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: AppColors.border),
                     ),
-                    child: Row(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: gap['importance'] == 'HIGH'
-                                ? AppColors.error.withValues(alpha: 0.2)
-                                : AppColors.warning.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            gap['importance']!,
-                            style: TextStyle(
-                              color: gap['importance'] == 'HIGH' ? AppColors.error : AppColors.warning,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  skill.name,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                                ),
+                                if (skill.isVerified) ...[
+                                  const SizedBox(width: 6),
+                                  const Icon(Icons.verified, size: 16, color: AppColors.accent),
+                                ],
+                              ],
                             ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.accent.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                skill.proficiencyLabel,
+                                style: const TextStyle(
+                                  color: AppColors.accentLight,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(skill.category, style: AppTextStyles.bodySmall),
+                        const SizedBox(height: 10),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: skill.level,
+                            backgroundColor: AppColors.surfaceLight,
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accent),
+                            minHeight: 6,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(gap['skill']!, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                              const SizedBox(height: 2),
-                              Text(gap['desc']!, style: AppTextStyles.bodySmall),
-                            ],
-                          ),
-                        ),
-                        Text(gap['time']!, style: const TextStyle(color: AppColors.accent, fontSize: 12, fontWeight: FontWeight.bold)),
                       ],
                     ),
-                  )),
-              const SizedBox(height: 24),
-            ],
-
-            // Current Skills List
-            const Text('Your Skills Profile', style: AppTextStyles.h2),
-            const SizedBox(height: 12),
-            ..._skills.map((skill) => Container(
+                  );
+                },
+              ),
+            ] else ...[
+              // Skill Gap Analysis Cards
+              const Text('Identified Skill Gaps', style: AppTextStyles.h2),
+              const SizedBox(height: 4),
+              const Text(
+                'Focusing on these domains maximizes job match percentage',
+                style: AppTextStyles.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              ..._gaps.map((gap) {
+                return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -146,25 +197,59 @@ class _SkillsScreenState extends State<SkillsScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(skill['name'], style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                          Text(skill['proficiency'], style: const TextStyle(color: AppColors.accentLight, fontSize: 12)),
+                          Expanded(
+                            child: Text(
+                              gap.skillName,
+                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: gap.importance == 'HIGH'
+                                  ? AppColors.error.withValues(alpha: 0.2)
+                                  : AppColors.warning.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              '${gap.importance} PRIORITY',
+                              style: TextStyle(
+                                color: gap.importance == 'HIGH' ? AppColors.error : AppColors.warning,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(skill['category'], style: AppTextStyles.bodySmall),
-                      const SizedBox(height: 10),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: LinearProgressIndicator(
-                          value: skill['level'],
-                          minHeight: 6,
-                          backgroundColor: AppColors.background,
-                          valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accent),
-                        ),
+                      Text(gap.rationale, style: AppTextStyles.bodyMedium),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.schedule, size: 14, color: AppColors.textMuted),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Estimated Time: ${gap.estimatedTimeToMaster}',
+                            style: AppTextStyles.bodySmall,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                )),
+                );
+              }),
+            ],
+
+            const SizedBox(height: 24),
+
+            // Interactive Roadmap Timeline Widget
+            RoadmapTimelineWidget(
+              milestones: milestones,
+              onToggleMilestone: (id) {
+                ref.read(roadmapProvider.notifier).toggleMilestone(id);
+              },
+            ),
           ],
         ),
       ),

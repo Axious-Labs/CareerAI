@@ -8,7 +8,8 @@ on:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Track 1: Flutter Mobile App
+  # Track 1: Flutter Mobile App and web
+  
   # ---------------------------------------------------------------------------
   flutter-ci:
     name: Mobile CI (Flutter)
