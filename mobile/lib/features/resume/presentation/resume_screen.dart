@@ -1,163 +1,221 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../services/resume_service.dart';
+import 'widgets/resume_score_card.dart';
+import 'widgets/resume_skill_chips.dart';
 
-class ResumeScreen extends StatefulWidget {
+class ResumeScreen extends ConsumerStatefulWidget {
   const ResumeScreen({super.key});
 
   @override
-  State<ResumeScreen> createState() => _ResumeScreenState();
+  ConsumerState<ResumeScreen> createState() => _ResumeScreenState();
 }
 
-class _ResumeScreenState extends State<ResumeScreen> {
+class _ResumeScreenState extends ConsumerState<ResumeScreen> {
   bool _isUploading = false;
-  String _resumeName = 'Alex_Chen_Resume_2026.pdf';
-  String _status = 'PARSED';
 
-  final List<String> _extractedSkills = [
-    'Python',
-    'Flutter',
-    'FastAPI',
-    'Docker',
-    'PostgreSQL',
-    'Git',
-    'Machine Learning',
-    'Problem Solving',
-  ];
-
-  void _simulateUpload() {
+  Future<void> _handleUpload() async {
     setState(() => _isUploading = true);
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _isUploading = false;
-          _resumeName = 'Updated_Resume_2026.pdf';
-          _status = 'PARSED';
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Resume uploaded and parsed successfully by GenAI Service!'),
-            backgroundColor: AppColors.success,
-          ),
+    final success = await ref.read(resumeStateProvider.notifier).uploadNewResume(
+          'Updated_Profile_Resume_2026.pdf',
+          List.filled(265000, 0),
         );
-      }
-    });
+    if (mounted) {
+      setState(() => _isUploading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? 'Resume uploaded and processed by CareerAI GenAI Service!'
+                : 'Upload failed. Please check connection.',
+          ),
+          backgroundColor: success ? AppColors.success : AppColors.error,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final resumeState = ref.watch(resumeStateProvider);
+    final resume = resumeState.currentResume ?? ResumeService.defaultSampleResume;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Resume Intelligence')),
+      appBar: AppBar(
+        title: const Text('Resume Intelligence'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: AppColors.textSecondary),
+            tooltip: 'Re-analyze',
+            onPressed: () =>
+                ref.read(resumeStateProvider.notifier).loadInitialResume(),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Upload Zone
+            // Upload Banner
             InkWell(
-              onTap: _isUploading ? null : _simulateUpload,
+              onTap: _isUploading ? null : _handleUpload,
               borderRadius: BorderRadius.circular(16),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+                padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.accent.withValues(alpha: 0.5), style: BorderStyle.solid, width: 1.5),
+                  border: Border.all(
+                    color: AppColors.accent.withValues(alpha: 0.5),
+                    width: 1.5,
+                  ),
                 ),
                 child: Column(
                   children: [
-                    if (_isUploading)
-                      const CircularProgressIndicator(color: AppColors.accent)
-                    else ...[
-                      const Icon(Icons.cloud_upload_outlined, size: 48, color: AppColors.accent),
-                      const SizedBox(height: 12),
-                      const Text('Upload Candidate Resume', style: AppTextStyles.h3),
-                      const SizedBox(height: 4),
-                      const Text('Supports PDF, DOCX (Max 5MB)', style: AppTextStyles.bodySmall),
-                    ],
+                    _isUploading
+                        ? const SizedBox(
+                            height: 48,
+                            width: 48,
+                            child: CircularProgressIndicator(color: AppColors.accent),
+                          )
+                        : const Icon(
+                            Icons.cloud_upload_outlined,
+                            size: 48,
+                            color: AppColors.accent,
+                          ),
+                    const SizedBox(height: 12),
+                    Text(
+                      _isUploading ? 'Analyzing Resume with GenAI...' : 'Upload Updated Resume',
+                      style: AppTextStyles.h3,
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'PDF or DOCX (Max 10MB) • Scanned for ATS optimization',
+                      style: AppTextStyles.bodySmall,
+                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 24),
 
-            // Active Resume Card
-            const Text('Active Resume', style: AppTextStyles.h2),
-            const SizedBox(height: 12),
+            // Active File Status Card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceLight,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.picture_as_pdf, color: AppColors.error, size: 28),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          resume.fileName,
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Size: ${resume.formattedFileSize} • Status: ${resume.status}',
+                          style: AppTextStyles.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      resume.status,
+                      style: const TextStyle(
+                        color: AppColors.success,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // ATS Score Breakdown
+            ResumeScoreCard(
+              atsScore: resume.atsScore,
+              keywordMatch: resume.keywordMatchPercentage,
+              readability: resume.readabilityScore,
+            ),
+            const SizedBox(height: 20),
+
+            // Extracted Skills
+            ResumeSkillChips(
+              skills: resume.extractedSkills,
+              onSkillTapped: (skill) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Skill selected: $skill'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // AI Recommendations Card
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.border),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    children: [
-                      const Icon(Icons.picture_as_pdf, color: AppColors.error, size: 32),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(_resumeName, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                            const SizedBox(height: 2),
-                            const Text('Uploaded Today • 248 KB', style: AppTextStyles.bodySmall),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.success.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          _status,
-                          style: const TextStyle(color: AppColors.success, fontSize: 11, fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                    children: const [
+                      Icon(Icons.lightbulb_outline, color: AppColors.warning, size: 20),
+                      SizedBox(width: 8),
+                      Text('AI Optimization Recommendations', style: AppTextStyles.h3),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  const Divider(color: AppColors.border, height: 1),
                   const SizedBox(height: 12),
-                  const Text('Extracted Skills (by GenAI)', style: AppTextStyles.bodyMedium),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _extractedSkills.map((skill) {
-                      return Chip(
-                        label: Text(skill, style: const TextStyle(fontSize: 12, color: AppColors.accentLight)),
-                        backgroundColor: AppColors.surfaceLight,
-                        side: const BorderSide(color: AppColors.border),
-                      );
-                    }).toList(),
+                  ...resume.recommendedImprovements.map(
+                    (tip) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.check_circle_outline, color: AppColors.accent, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(tip, style: AppTextStyles.bodyMedium),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // AI Parsing Summary
-            const Text('GenAI Analysis Summary', style: AppTextStyles.h2),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: const Text(
-                'Demonstrates a strong foundation in mobile architecture and Python backend services. '
-                'Recommended to showcase project work involving vector stores and autonomous agents to strengthen alignment with target AI/ML roles.',
-                style: TextStyle(color: AppColors.textSecondary, height: 1.5),
               ),
             ),
           ],
