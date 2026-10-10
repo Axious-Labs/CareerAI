@@ -27,4 +27,34 @@ export class JobRepository {
       data,
     });
   }
+
+  async search(query?: string, location?: string): Promise<Job[]> {
+    const where: Prisma.JobWhereInput = {};
+    const conditions: Prisma.JobWhereInput[] = [];
+
+    if (query) {
+      conditions.push({
+        OR: [
+          { title: { contains: query, mode: 'insensitive' } },
+          { description: { contains: query, mode: 'insensitive' } },
+          { company: { contains: query, mode: 'insensitive' } },
+        ],
+      });
+    }
+
+    if (location) {
+      conditions.push({
+        location: { contains: location, mode: 'insensitive' },
+      });
+    }
+
+    if (conditions.length > 0) {
+      where.AND = conditions;
+    }
+
+    return prisma.job.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 }

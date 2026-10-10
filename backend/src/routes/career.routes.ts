@@ -20,5 +20,6 @@ const careerController = new CareerController(careerService);
 careerRouter.post('/analyze', authenticate, validateRequest(careerAnalyzeSchema), careerController.analyzeProfile);
 careerRouter.post('/skill-gap', authenticate, validateRequest(skillGapSchema), careerController.getSkillGap);
 careerRouter.post('/roadmap', authenticate, validateRequest(roadmapSchema), careerController.getRoadmap);
+careerRouter.get('/resources', authenticate, careerController.getResources);
 
 export { careerRouter };
