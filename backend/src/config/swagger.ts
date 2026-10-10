@@ -176,6 +176,44 @@ export const swaggerSpec = {
           200: { description: 'Jobs list returned' },
         },
       },
+      post: {
+        summary: 'Create a new job posting',
+        tags: ['Jobs'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          201: { description: 'Job created' },
+        },
+      },
+    },
+    '/jobs/recommendations': {
+      get: {
+        summary: 'Get personalized job recommendations ranked by match score',
+        tags: ['Jobs'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Ranked job recommendations returned' },
+        },
+      },
+    },
+    '/jobs/search': {
+      get: {
+        summary: 'Search jobs by title, company, description, and location',
+        tags: ['Jobs'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Filtered jobs returned' },
+        },
+      },
+    },
+    '/jobs/{id}/match': {
+      get: {
+        summary: 'Analyze candidate skill overlap and match score for a specific job',
+        tags: ['Jobs'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Match breakdown and interview prep tips returned' },
+        },
+      },
     },
     '/applications': {
       get: {
@@ -192,6 +230,94 @@ export const swaggerSpec = {
         security: [{ BearerAuth: [] }],
         responses: {
           201: { description: 'Application tracked' },
+        },
+      },
+    },
+    '/applications/analytics': {
+      get: {
+        summary: 'Get job application funnel analytics, offer rates, and actionable insights',
+        tags: ['Applications'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Application pipeline metrics returned' },
+        },
+      },
+    },
+    '/applications/{id}/status': {
+      patch: {
+        summary: 'Update application recruitment stage status and notes',
+        tags: ['Applications'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Application status updated' },
+        },
+      },
+    },
+    '/applications/{id}/notes': {
+      patch: {
+        summary: 'Update notes on an existing application',
+        tags: ['Applications'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Notes updated' },
+        },
+      },
+    },
+    '/goals': {
+      get: {
+        summary: 'Get user career goals and milestone progress',
+        tags: ['Career Goals'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Goals list returned' },
+        },
+      },
+      post: {
+        summary: 'Create a new career goal with milestone checkpoints',
+        tags: ['Career Goals'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          201: { description: 'Goal created' },
+        },
+      },
+    },
+    '/goals/summary': {
+      get: {
+        summary: 'Get career goals metrics, overall completion rate, and next milestones',
+        tags: ['Career Goals'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Goals summary metrics returned' },
+        },
+      },
+    },
+    '/goals/{id}/progress': {
+      patch: {
+        summary: 'Update goal progress percentage and status',
+        tags: ['Career Goals'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Goal progress updated' },
+        },
+      },
+    },
+    '/goals/{id}/milestones': {
+      post: {
+        summary: 'Add milestone to an existing career goal',
+        tags: ['Career Goals'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          201: { description: 'Milestone added' },
+        },
+      },
+    },
+    '/goals/{id}/milestones/{milestoneId}/toggle': {
+      patch: {
+        summary: 'Toggle milestone completion status and recalculate goal progress',
+        tags: ['Career Goals'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Milestone toggled' },
         },
       },
     },
@@ -232,6 +358,16 @@ export const swaggerSpec = {
         security: [{ BearerAuth: [] }],
         responses: {
           200: { description: 'Roadmap generated' },
+        },
+      },
+    },
+    '/career/resources': {
+      get: {
+        summary: 'Get curated learning guides, architecture patterns, and technical resources',
+        tags: ['Career Intelligence'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Curated technical resources returned' },
         },
       },
     },

@@ -51,4 +51,18 @@ export class CareerController {
       next(err);
     }
   };
+
+  getResources = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const targetRole = req.query.role as string | undefined;
+      const resources = await this.careerService.getCuratedResources(targetRole);
+      sendSuccess(res, resources, 200);
+    } catch (err) {
+      next(err);
+    }
+  };
 }

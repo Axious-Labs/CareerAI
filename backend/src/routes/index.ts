@@ -8,6 +8,7 @@ import { applicationRouter } from './application.routes';
 import { chatRouter } from './chat.routes';
 import { careerRouter } from './career.routes';
 import { interviewRouter } from './interview.routes';
+import { goalRouter } from './goal.routes';
 
 const apiRouter = Router();
 
@@ -20,6 +21,7 @@ apiRouter.use('/applications', applicationRouter);
 apiRouter.use('/chat', chatRouter);
 apiRouter.use('/career', careerRouter);
 apiRouter.use('/interviews', interviewRouter);
+apiRouter.use('/goals', goalRouter);
 
 export { apiRouter };
 
