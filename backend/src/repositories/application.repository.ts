@@ -32,4 +32,17 @@ export class ApplicationRepository {
       },
     });
   }
+
+  async updateNotes(id: string, notes: string): Promise<Application> {
+    return prisma.application.update({
+      where: { id },
+      data: { notes },
+    });
+  }
+
+  async delete(id: string): Promise<Application> {
+    return prisma.application.delete({
+      where: { id },
+    });
+  }
 }
