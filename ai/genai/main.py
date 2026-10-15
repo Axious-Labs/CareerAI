@@ -19,7 +19,9 @@ app = FastAPI(
     description="Generative AI, Resume Intelligence & RAG Service developed by Axious Labs.",
     version="1.0.0",
 )
-
+# This is test file to check if the genai is working properly
+# Add CORS middleware to allow requests from all origins
+#Add jwt auth to the genai service
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
