@@ -31,4 +31,16 @@ class ApiEndpoints {
   static const String startInterview = '/interviews/start';
   static const String evaluateAnswer = '/interviews/evaluate';
   static const String interviewHistory = '/interviews/history';
+
+  // Career Goals & Milestones
+  static const String goals = '/goals';
+  static const String goalSummary = '/goals/summary';
+
+  // Analytics & Market Intelligence
+  static const String analytics = '/analytics/overview';
+  static const String salaryBenchmarks = '/analytics/salaries';
+
+  // Notifications & Alerts
+  static const String notifications = '/notifications';
+  static const String markNotificationRead = '/notifications/read';
 }

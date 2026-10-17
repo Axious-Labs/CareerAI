@@ -40,8 +40,14 @@ class DashboardScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: AppColors.textPrimary),
+            onPressed: () => context.push('/notifications'),
+            tooltip: 'Career Alerts',
+          ),
+          IconButton(
             icon: const Icon(Icons.person_outline, color: AppColors.textPrimary),
             onPressed: () => context.push('/profile'),
+            tooltip: 'Career Profile',
           ),
         ],
       ),
@@ -199,6 +205,18 @@ class DashboardScreen extends ConsumerWidget {
                   title: 'Applications',
                   icon: Icons.assignment_outlined,
                   route: '/applications',
+                ),
+                _buildActionButton(
+                  context,
+                  title: 'Roadmap & Goals',
+                  icon: Icons.flag_outlined,
+                  route: '/goals',
+                ),
+                _buildActionButton(
+                  context,
+                  title: 'Market Analytics',
+                  icon: Icons.insights_outlined,
+                  route: '/analytics',
                 ),
               ],
             ),

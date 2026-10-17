@@ -10,6 +10,9 @@ import '../../features/jobs/presentation/jobs_screen.dart';
 import '../../features/applications/presentation/applications_screen.dart';
 import '../../features/ai_chat/presentation/ai_chat_screen.dart';
 import '../../features/interview/presentation/interview_prep_screen.dart';
+import '../../features/goals/presentation/goals_screen.dart';
+import '../../features/analytics/presentation/analytics_screen.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -58,6 +61,18 @@ class AppRouter {
       GoRoute(
         path: '/interview-prep',
         builder: (context, state) => const InterviewPrepScreen(),
+      ),
+      GoRoute(
+        path: '/goals',
+        builder: (context, state) => const GoalsScreen(),
+      ),
+      GoRoute(
+        path: '/analytics',
+        builder: (context, state) => const AnalyticsScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationsScreen(),
       ),
     ],
   );
