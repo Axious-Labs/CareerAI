@@ -147,6 +147,66 @@ class MockDataFactory {
     );
   }
 
+  static ResumeData createResumeData({
+    String id = 'res_mock_default',
+    String fileName = 'AlexChen_Senior_Engineer.pdf',
+    int fileSizeBytes = 245000,
+    DateTime? uploadedAt,
+    String status = 'PARSED',
+    int atsScore = 91,
+    int keywordMatchPercentage = 87,
+    int readabilityScore = 95,
+    String summary = 'Senior Flutter & Mobile AI Systems Architect with 6+ years experience.',
+    List<String>? extractedSkills,
+    List<WorkExperience>? experiences,
+    List<EducationItem>? education,
+    List<ProjectItem>? projects,
+    List<String>? recommendedImprovements,
+  }) {
+    return ResumeData(
+      id: id,
+      fileName: fileName,
+      fileSizeBytes: fileSizeBytes,
+      uploadedAt: uploadedAt ?? DateTime(2026, 10, 25),
+      status: status,
+      atsScore: atsScore,
+      keywordMatchPercentage: keywordMatchPercentage,
+      readabilityScore: readabilityScore,
+      summary: summary,
+      extractedSkills: extractedSkills ?? const ['Flutter', 'Riverpod', 'Dart', 'Dio', 'Python'],
+      experiences: experiences ??
+          const [
+            WorkExperience(
+              company: 'Axious Labs',
+              role: 'Senior Flutter Engineer',
+              startDate: '2024-01-01',
+              endDate: 'Present',
+              achievements: ['Architected core mobile app', 'Achieved 60fps performance'],
+              technologiesUsed: ['Flutter', 'Riverpod', 'Dio'],
+            ),
+          ],
+      education: education ??
+          const [
+            EducationItem(
+              institution: 'Stanford University',
+              degree: 'B.S.',
+              fieldOfStudy: 'Computer Science',
+              graduationYear: 2024,
+            ),
+          ],
+      projects: projects ??
+          const [
+            ProjectItem(
+              title: 'CareerAI Mobile Platform',
+              description: 'AI Career platform app',
+              techStack: ['Flutter', 'Riverpod'],
+            ),
+          ],
+      recommendedImprovements: recommendedImprovements ??
+          const ['Add quantifiable metrics for architecture impact', 'Include cloud certifications'],
+    );
+  }
+
   static UserProfileDetail createUserProfile({
     String id = 'user_default_1',
     String name = 'Alex Chen',

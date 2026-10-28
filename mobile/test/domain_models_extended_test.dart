@@ -41,14 +41,42 @@ void main() {
     });
 
     test('JobPosting workplace and experience enums fallback to sensible defaults', () {
-      expect(WorkplaceType.remote.label, 'Remote');
-      expect(WorkplaceType.hybrid.label, 'Hybrid');
-      expect(WorkplaceType.onsite.label, 'On-site');
+      final baseJob = JobPosting(
+        id: 'job_test_base',
+        title: 'Flutter Dev',
+        company: 'Axious',
+        location: 'Remote',
+        workplaceType: WorkplaceType.remote,
+        experienceLevel: ExperienceLevel.entry,
+        salaryRange: '\$100k',
+        matchScore: 80,
+        description: 'Test',
+        requirements: const [],
+        tags: const [],
+        postedDate: DateTime.now(),
+      );
 
-      expect(ExperienceLevel.entry.label, 'Entry-level');
-      expect(ExperienceLevel.mid.label, 'Mid-level');
-      expect(ExperienceLevel.senior.label, 'Senior');
-      expect(ExperienceLevel.lead.label, 'Lead / Principal');
+      expect(baseJob.workplaceLabel, 'Remote');
+      expect(baseJob.experienceLabel, 'Entry-level');
+
+      final hybridMid = baseJob.copyWith(
+        workplaceType: WorkplaceType.hybrid,
+        experienceLevel: ExperienceLevel.mid,
+      );
+      expect(hybridMid.workplaceLabel, 'Hybrid');
+      expect(hybridMid.experienceLabel, 'Mid-level');
+
+      final onsiteSenior = baseJob.copyWith(
+        workplaceType: WorkplaceType.onsite,
+        experienceLevel: ExperienceLevel.senior,
+      );
+      expect(onsiteSenior.workplaceLabel, 'On-site');
+      expect(onsiteSenior.experienceLabel, 'Senior');
+
+      final leadJob = baseJob.copyWith(
+        experienceLevel: ExperienceLevel.lead,
+      );
+      expect(leadJob.experienceLabel, 'Lead / Principal');
     });
 
     test('CareerGoal milestones progress computation with zero milestones', () {
@@ -64,7 +92,7 @@ void main() {
       );
 
       expect(goalNoMilestones.totalMilestones, 0);
-      expect(goalNoMilestones.completedMilestones, 0);
+      expect(goalNoMilestones.completedMilestonesCount, 0);
       expect(goalNoMilestones.calculatedProgress, 0.0);
     });
 
@@ -107,14 +135,32 @@ void main() {
       expect(skill.proficiencyLabel, 'Expert');
       expect(skill.proficiency, SkillProficiency.expert);
 
-      final beginner = skill.copyWith(proficiency: SkillProficiency.beginner, level: 0.3);
+      const beginner = SkillItem(
+        id: 'sk_2',
+        name: 'Riverpod',
+        category: 'State Management',
+        proficiency: SkillProficiency.beginner,
+        level: 0.3,
+      );
       expect(beginner.proficiencyLabel, 'Beginner');
       expect(beginner.level, 0.3);
 
-      final intermediate = skill.copyWith(proficiency: SkillProficiency.intermediate);
+      const intermediate = SkillItem(
+        id: 'sk_3',
+        name: 'Riverpod',
+        category: 'State Management',
+        proficiency: SkillProficiency.intermediate,
+        level: 0.6,
+      );
       expect(intermediate.proficiencyLabel, 'Intermediate');
 
-      final advanced = skill.copyWith(proficiency: SkillProficiency.advanced);
+      const advanced = SkillItem(
+        id: 'sk_4',
+        name: 'Riverpod',
+        category: 'State Management',
+        proficiency: SkillProficiency.advanced,
+        level: 0.85,
+      );
       expect(advanced.proficiencyLabel, 'Advanced');
     });
 
@@ -169,6 +215,7 @@ void main() {
         experiences: const [],
         education: const [],
         projects: const [],
+        recommendedImprovements: const ['Improve keyword density'],
       );
 
       expect(resume.formattedFileSize, contains('KB'));
@@ -288,11 +335,13 @@ void main() {
         feedback: 'Outstanding technical depth and clarity.',
         strengths: const ['Deep architectural knowledge', 'Clear verbal expression'],
         areasForImprovement: const ['Mention automated widget testing'],
+        modelAnswerTip: 'Use STAR method',
       );
 
       expect(eval.score, 95);
       expect(eval.strengths.length, 2);
       expect(eval.areasForImprovement.first, contains('widget testing'));
+      expect(eval.modelAnswerTip, 'Use STAR method');
     });
 
     test('CareerAnalyticsOverview serializes nested skill demands and salary benchmarks', () {
@@ -341,4 +390,3 @@ void main() {
     });
   });
 }
-
