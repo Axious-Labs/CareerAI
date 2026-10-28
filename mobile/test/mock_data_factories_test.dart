@@ -112,6 +112,15 @@ void main() {
       expect(session.questions.length, 1);
       expect(session.questions.first.expectedKeyPoints.contains('Flutter DevTools Timeline'), isTrue);
     });
+
+    test('createResumeData instantiates valid structured resume metrics', () {
+      final resume = MockDataFactory.createResumeData();
+      expect(resume.id, 'res_mock_default');
+      expect(resume.atsScore, 91);
+      expect(resume.extractedSkills.contains('Flutter'), isTrue);
+      expect(resume.experiences.isNotEmpty, isTrue);
+      expect(resume.recommendedImprovements.isNotEmpty, isTrue);
+    });
   });
 }
 
