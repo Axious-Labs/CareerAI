@@ -44,6 +44,12 @@ class MockProfileService extends ProfileService {
     );
   }
 }
+//1. Mock Profile Service - Created for dependency injection
+//2. CertificationCard widget tests - Verify correct display of certification details
+//3. PortfolioProjectCard widget tests - Verify correct display of project details
+//4. ProfileScreen widget tests - Verify screen renders with correct tabs and data loading
+//5. Riverpod ProviderScope - Used for testing state management in the profile screen
+
 
 void main() {
   group('Profile Widgets Unit Tests', () {
