@@ -79,7 +79,7 @@ void main() {
       await tester.enterText(textField, 'Using isolates and compute for offloading heavy computation.');
       await tester.pump();
 
-      expect(find.text('Evaluate with Axious AI'), findsOneWidget);
+      expect(find.text('Evaluate Answer'), findsOneWidget);
     });
   });
 }
