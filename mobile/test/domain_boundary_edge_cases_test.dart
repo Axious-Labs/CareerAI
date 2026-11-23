@@ -180,7 +180,7 @@ void main() {
       expect(updated.preferences.expectedMinSalary, 120000);
     });
 
-    test('ChatMessageData json parsing handles empty string timestamp and sender', () {
+    test('ChatMessageData json parsing handles empty string timestamp and default ai sender', () {
       final json = {
         'id': 'msg_bare',
         'text': 'Hello AI',
@@ -189,7 +189,7 @@ void main() {
       final msg = ChatMessageData.fromJson(json);
       expect(msg.id, 'msg_bare');
       expect(msg.text, 'Hello AI');
-      expect(msg.sender, MessageSender.user);
+      expect(msg.sender, MessageSender.ai);
       expect(msg.quickReplies, isEmpty);
     });
 
