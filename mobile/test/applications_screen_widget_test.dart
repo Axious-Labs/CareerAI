@@ -19,7 +19,7 @@ void main() {
       expect(find.text('Application Tracker'), findsOneWidget);
       expect(find.text('All Applications'), findsOneWidget);
       expect(find.text('APPLIED'), findsOneWidget);
-      expect(find.text('SCREENING'), findsOneWidget);
+      expect(find.text('UNDERREVIEW'), findsOneWidget);
       expect(find.text('INTERVIEWING'), findsOneWidget);
     });
 
@@ -51,4 +51,3 @@ void main() {
     });
   });
 }
-
