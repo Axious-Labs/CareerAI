@@ -371,5 +371,101 @@ export const swaggerSpec = {
         },
       },
     },
+    '/notifications': {
+      get: {
+        summary: 'List user notifications with optional unread/type filters',
+        tags: ['Notifications'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'List of user notifications' },
+        },
+      },
+      post: {
+        summary: 'Create and dispatch a new user notification',
+        tags: ['Notifications'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          201: { description: 'Notification created' },
+        },
+      },
+    },
+    '/notifications/summary': {
+      get: {
+        summary: 'Get breakdown of unread and prioritized notifications',
+        tags: ['Notifications'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Notification summary returned' },
+        },
+      },
+    },
+    '/notifications/mark-all-read': {
+      patch: {
+        summary: 'Mark all unread notifications as read',
+        tags: ['Notifications'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'All notifications marked as read' },
+        },
+      },
+    },
+    '/analytics/overview': {
+      get: {
+        summary: 'Get platform overview readiness and hiring metrics',
+        tags: ['Analytics & Market Intelligence'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Analytics overview returned' },
+        },
+      },
+    },
+    '/analytics/market-trends': {
+      get: {
+        summary: 'Get real-time market demand and tech hiring trends',
+        tags: ['Analytics & Market Intelligence'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Market insights returned' },
+        },
+      },
+    },
+    '/analytics/salary-benchmark': {
+      post: {
+        summary: 'Calculate salary bands and skill premiums by role & level',
+        tags: ['Analytics & Market Intelligence'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'Salary benchmark report returned' },
+        },
+      },
+    },
+    '/learning/courses': {
+      get: {
+        summary: 'List curated engineering courses and learning tracks',
+        tags: ['Learning & Mentorship'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'List of courses returned' },
+        },
+      },
+      post: {
+        summary: 'Publish a new structured engineering course',
+        tags: ['Learning & Mentorship'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          201: { description: 'Course published successfully' },
+        },
+      },
+    },
+    '/learning/enrolled': {
+      get: {
+        summary: 'Get user enrolled courses and progress tracking',
+        tags: ['Learning & Mentorship'],
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: { description: 'User learning dashboard returned' },
+        },
+      },
+    },
   },
 };

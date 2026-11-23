@@ -9,6 +9,9 @@ import { chatRouter } from './chat.routes';
 import { careerRouter } from './career.routes';
 import { interviewRouter } from './interview.routes';
 import { goalRouter } from './goal.routes';
+import { notificationRouter } from './notification.routes';
+import { analyticsRouter } from './analytics.routes';
+import { learningRouter } from './learning.routes';
 
 const apiRouter = Router();
 
@@ -22,6 +25,9 @@ apiRouter.use('/chat', chatRouter);
 apiRouter.use('/career', careerRouter);
 apiRouter.use('/interviews', interviewRouter);
 apiRouter.use('/goals', goalRouter);
+apiRouter.use('/notifications', notificationRouter);
+apiRouter.use('/analytics', analyticsRouter);
+apiRouter.use('/learning', learningRouter);
 
 export { apiRouter };
 
