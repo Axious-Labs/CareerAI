@@ -7,7 +7,6 @@ import 'package:careerai_mobile/features/profile/models/profile_model.dart';
 import 'package:careerai_mobile/features/ai_chat/models/chat_message_model.dart';
 import 'package:careerai_mobile/features/notifications/models/notification_model.dart';
 import 'package:careerai_mobile/features/applications/models/application_model.dart';
-import 'package:careerai_mobile/features/interview/models/interview_model.dart';
 import 'package:careerai_mobile/features/analytics/models/analytics_model.dart';
 
 void main() {
@@ -161,6 +160,11 @@ void main() {
         targetRole: 'Mobile Dev',
         careerReadiness: 70,
         education: 'BS CS',
+        preferences: const CareerPreferences(
+          targetRole: 'Mobile Dev',
+          location: 'Remote',
+          expectedMinSalary: 120000,
+        ),
       );
 
       final updated = user.copyWith(
@@ -173,6 +177,7 @@ void main() {
       expect(updated.careerReadiness, 95);
       expect(updated.targetRole, 'Principal Mobile Architect');
       expect(updated.email, 'alex@test.com');
+      expect(updated.preferences.expectedMinSalary, 120000);
     });
 
     test('ChatMessageData json parsing handles empty string timestamp and sender', () {
@@ -206,7 +211,7 @@ void main() {
 
     test('JobApplication status transitions and enum fallback', () {
       expect(ApplicationStatus.applied.name, 'applied');
-      expect(ApplicationStatus.screening.name, 'screening');
+      expect(ApplicationStatus.underReview.name, 'underReview');
       expect(ApplicationStatus.interviewing.name, 'interviewing');
       expect(ApplicationStatus.offer.name, 'offer');
       expect(ApplicationStatus.rejected.name, 'rejected');
@@ -222,9 +227,9 @@ void main() {
         notes: '',
       );
 
-      final updated = app.copyWith(status: ApplicationStatus.screening);
-      expect(updated.status, ApplicationStatus.screening);
-      expect(updated.statusDisplay, 'SCREENING');
+      final updated = app.copyWith(status: ApplicationStatus.underReview);
+      expect(updated.status, ApplicationStatus.underReview);
+      expect(updated.statusDisplay, 'UNDER REVIEW');
     });
 
     test('ApplicationFunnelStats interview and offer conversion calculations', () {
@@ -242,4 +247,3 @@ void main() {
     });
   });
 }
-
